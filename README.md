@@ -1,4 +1,4 @@
-AI_Devs3 Reloaded Assignments
+# AI_Devs3 Reloaded Assignments
 
 This repository contains my solutions and work for the AI_Devs3 Reloaded course assignments. The course focuses on practical AI development skills and is available at [aidevs.pl](https://www.aidevs.pl/).
 
