@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { ReadStream } from "fs";
 
 export class OpenAIService {
   private openai: OpenAI;
@@ -32,6 +33,41 @@ export class OpenAIService {
       }
     } catch (error) {
       console.error("Error in OpenAI completion:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Transcribes audio files to text using OpenAI's Whisper
+   * 
+   * @param options - Options for audio transcription
+   * @returns Transcribed text
+   */
+  async createTranscription(options: {
+    file: ReadStream | File;
+    model: string;
+    language?: string;
+    prompt?: string;
+    response_format?: string;
+    temperature?: number;
+  }): Promise<string> {
+    try {
+      const { file, model, language, prompt, response_format, temperature } = options;
+      
+      const transcription = await this.openai.audio.transcriptions.create({
+        file,
+        model,
+        language,
+        prompt,
+        response_format,
+        temperature,
+      });
+      
+      return typeof transcription === 'string' 
+        ? transcription 
+        : (transcription as any).text || '';
+    } catch (error) {
+      console.error("Error in OpenAI transcription:", error);
       throw error;
     }
   }

@@ -15,6 +15,8 @@
     "zad2": "bun run zad2/zad2.ts",
     "zad3": "bun run zad3/zad3.ts",
     "zad4": "bun run zad4/zad4.ts",
+    "zad5": "bun run zad5/zad5.ts",
+    "zad6": "bun run zad6/app.ts",
     "my-app": "bun run app.ts"
   },
   "peerDependencies": {
