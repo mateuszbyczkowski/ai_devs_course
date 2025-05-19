@@ -3,6 +3,15 @@ import type {
   ChatCompletionMessageParam,
 } from "openai/resources/chat/completions";
 
+// Run the function if this file is executed directly
+if (require.main === module || import.meta.main) {
+  zad5().then(result => {
+    console.log("Execution result:", result);
+  }).catch(error => {
+    console.error("Error during execution:", error);
+  });
+}
+
 import axios from "axios";
 import { anonymizeDataPrompt } from "../prompts.ts";
 import { OpenAIService } from "../services/OpenAIService.ts";
@@ -10,6 +19,7 @@ import { LocalOllamaService } from "../services/LocalOllamaService.ts";
 import { LocalLlamaCppService } from "../services/LocalLlamaCppService.ts";
 import type { Request } from "express-serve-static-core";
 import type { ParsedQs } from "qs";
+import "dotenv/config";
 
 const openaiService = new OpenAIService();
 
@@ -31,7 +41,7 @@ async function submitData(anonymizedData: string) {
   return resp;
 }
 
-export async function zad5(req: any) {
+export async function zad5(req?: any) {
   const realData = await fetchData(
     `https://c3ntrala.ag3nts.org/data/${process.env.PERSONAL_API_KEY}/cenzura.txt`,
   );
