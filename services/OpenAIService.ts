@@ -1,7 +1,6 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { ReadStream } from "fs";
-import type { AudioResponseFormat } from "openai/resources";
 
 export class OpenAIService {
   private openai: OpenAI;
@@ -49,7 +48,7 @@ export class OpenAIService {
     model: string;
     language?: string;
     prompt?: string;
-    response_format?: AudioResponseFormat;
+    response_format?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt';
     temperature?: number;
   }): Promise<string> {
     try {
