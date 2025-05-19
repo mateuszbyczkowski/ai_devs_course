@@ -1,6 +1,7 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { ReadStream } from "fs";
+import type { AudioResponseFormat } from "openai/resources";
 
 export class OpenAIService {
   private openai: OpenAI;
@@ -39,7 +40,7 @@ export class OpenAIService {
 
   /**
    * Transcribes audio files to text using OpenAI's Whisper
-   * 
+   *
    * @param options - Options for audio transcription
    * @returns Transcribed text
    */
@@ -48,12 +49,13 @@ export class OpenAIService {
     model: string;
     language?: string;
     prompt?: string;
-    response_format?: string;
+    response_format?: AudioResponseFormat;
     temperature?: number;
   }): Promise<string> {
     try {
-      const { file, model, language, prompt, response_format, temperature } = options;
-      
+      const { file, model, language, prompt, response_format, temperature } =
+        options;
+
       const transcription = await this.openai.audio.transcriptions.create({
         file,
         model,
@@ -62,10 +64,10 @@ export class OpenAIService {
         response_format,
         temperature,
       });
-      
-      return typeof transcription === 'string' 
-        ? transcription 
-        : (transcription as any).text || '';
+
+      return typeof transcription === "string"
+        ? transcription
+        : (transcription as any).text || "";
     } catch (error) {
       console.error("Error in OpenAI transcription:", error);
       throw error;
