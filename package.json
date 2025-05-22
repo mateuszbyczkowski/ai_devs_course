@@ -18,13 +18,8 @@
     "zad5": "bun run zad5/zad5.ts",
     "zad6": "bun run zad6/app.ts",
     "zad7": "bun run zad7/zad7.ts",
-    "zad7:improved": "bun run zad7/zad7_improved.ts",
-    "zad7:expert": "bun run zad7/zad7_expert.ts",
-    "zad7:cemetery": "bun run zad7/cemetery_reader.ts",
-    "zad7:cemetery-simple": "bun run zad7/cemetery_simple.ts",
-    "zad7:cemetery-focused": "bun run zad7/cemetery_focused.ts",
-    "zad7:cemetery-basic": "bun run zad7/cemetery_basic.ts",
-    "zad7:final": "bun run zad7/final_attempt.ts"
+    "zad8": "bun run zad8/app.ts",
+    "zad9": "bun run zad9/app.ts"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"
