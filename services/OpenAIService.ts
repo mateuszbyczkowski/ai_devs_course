@@ -76,4 +76,55 @@ export class OpenAIService {
       throw error;
     }
   }
+
+  /**
+   * Generates an image using OpenAI's DALL-E models
+   * 
+   * @param options - Options for image generation
+   * @returns URL of the generated image
+   */
+  async generateImage(options: {
+    prompt: string;
+    model?: string;
+    n?: number;
+    size?: "1024x1024" | "1792x1024" | "1024x1792" | "512x512" | "256x256";
+    quality?: "standard" | "hd";
+    style?: "vivid" | "natural";
+    response_format?: "url" | "b64_json";
+  }): Promise<string> {
+    try {
+      const {
+        prompt,
+        model = "dall-e-3",
+        n = 1,
+        size = "1024x1024",
+        quality = "standard",
+        style = "vivid",
+        response_format = "url"
+      } = options;
+
+      const result = await this._openai.images.generate({
+        prompt,
+        model,
+        n,
+        size,
+        quality,
+        style,
+        response_format,
+      });
+
+      if (result && result.data && result.data.length > 0) {
+        if (response_format === "url" && result.data[0].url) {
+          return result.data[0].url;
+        } else if (response_format === "b64_json" && result.data[0].b64_json) {
+          return result.data[0].b64_json;
+        }
+      }
+      
+      throw new Error("No image data returned from OpenAI");
+    } catch (error) {
+      console.error("Error in OpenAI image generation:", error);
+      throw error;
+    }
+  }
 }
