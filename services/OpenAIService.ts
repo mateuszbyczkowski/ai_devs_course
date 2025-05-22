@@ -3,10 +3,14 @@ import type { ChatCompletionMessageParam } from "openai/resources/chat/completio
 import { ReadStream } from "fs";
 
 export class OpenAIService {
-  private openai: OpenAI;
+  private _openai: OpenAI;
+
+  get openai(): OpenAI {
+    return this._openai;
+  }
 
   constructor() {
-    this.openai = new OpenAI();
+    this._openai = new OpenAI();
   }
 
   async completion(
@@ -19,7 +23,7 @@ export class OpenAIService {
     | AsyncIterable<OpenAI.Chat.Completions.ChatCompletionChunk>
   > {
     try {
-      const chatCompletion = await this.openai.chat.completions.create({
+      const chatCompletion = await this._openai.chat.completions.create({
         messages,
         model,
         stream,
@@ -55,7 +59,7 @@ export class OpenAIService {
       const { file, model, language, prompt, response_format, temperature } =
         options;
 
-      const transcription = await this.openai.audio.transcriptions.create({
+      const transcription = await this._openai.audio.transcriptions.create({
         file,
         model,
         language,
