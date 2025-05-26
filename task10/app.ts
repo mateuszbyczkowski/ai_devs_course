@@ -61,7 +61,8 @@ async function main() {
     console.log("Submitting answers...");
     try {
       const response = await submitAnswers(answers);
-      console.log("API response data:", response.data);
+
+      console.log("API response data:", response);
       return { indexedContent, questions, answers, response };
     } catch (error: any) {
       console.error("Error submitting answers:", error.message);

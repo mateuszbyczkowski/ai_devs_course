@@ -581,7 +581,7 @@ async function generateImageDescription(
         {
           role: "system",
           content:
-            "You are an expert at analyzing images and providing detailed descriptions. Focus on the main content, people, objects, weather, time of the day, text, and other important elements in the image. Try to guess the place.",
+            "You are an expert at analyzing images and providing detailed descriptions. Focus on the main content, people, objects, weather, time of the day, text, and other important elements in the image.",
         },
         {
           role: "user",
