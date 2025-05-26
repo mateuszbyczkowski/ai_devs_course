@@ -253,6 +253,7 @@ export async function fetchAndProcessArticle(
           const audioPath = path.join(audioDir, match.filename);
 
           for (const audioUrl of possibleUrls) {
+            if (!audioUrl) continue;
             try {
               console.log(
                 `Attempting to fetch audio: ${path.basename(audioUrl)}`,
