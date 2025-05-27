@@ -20,7 +20,8 @@
     "task7": "bun run task7/app.ts",
     "task8": "bun run task8/app.ts",
     "task9": "bun run task9/app.ts",
-    "task10": "bun run task10/app.ts"
+    "task10": "bun run task10/app.ts",
+    "task11": "bun run task11/app.ts"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"
@@ -120,7 +121,8 @@
     "xlsx-populate": "^1.21.0",
     "youtube-caption-extractor": "^1.4.3",
     "youtube-node": "^1.3.3",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "langfuse": "^2.18.1"
   },
   "trustedDependencies": [
     "faiss-node",
