@@ -79,11 +79,17 @@ export class VectorService {
     limit: number = 5,
   ) {
     const queryEmbedding = await this.openAIService.createEmbedding(query);
-    return this.client.search(collectionName, {
-      vector: queryEmbedding,
-      limit,
-      with_payload: true,
-      filter,
-    });
+
+    try {
+      return this.client.search(collectionName, {
+        vector: queryEmbedding,
+        limit,
+        with_payload: true,
+        filter,
+      });
+    } catch (error) {
+      console.error("Error during vector search:", error);
+      throw error;
+    }
   }
 }
