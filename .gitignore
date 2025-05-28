@@ -5,5 +5,6 @@ evaluation_basics/.env
 node_modules/
 **/*.db
 .vscode/
-zad6/przesluchania/*
-zad6/transcripts/*
+task6/przesluchania/*
+task6/transcripts/*
+services/points.json
