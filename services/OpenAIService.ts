@@ -1,9 +1,11 @@
 import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import type { CreateEmbeddingResponse } from "openai/resources/embeddings";
 import { ReadStream } from "fs";
 
 export class OpenAIService {
   private _openai: OpenAI;
+  private readonly JINA_API_KEY = process.env.JINA_API_KEY;
 
   get openai(): OpenAI {
     return this._openai;
@@ -52,7 +54,7 @@ export class OpenAIService {
     model: string;
     language?: string;
     prompt?: string;
-    response_format?: 'json' | 'text' | 'srt' | 'verbose_json' | 'vtt';
+    response_format?: "json" | "text" | "srt" | "verbose_json" | "vtt";
     temperature?: number;
   }): Promise<string> {
     try {
@@ -79,7 +81,7 @@ export class OpenAIService {
 
   /**
    * Generates an image using OpenAI's DALL-E models
-   * 
+   *
    * @param options - Options for image generation
    * @returns URL of the generated image
    */
@@ -100,7 +102,7 @@ export class OpenAIService {
         size = "1024x1024",
         quality = "standard",
         style = "vivid",
-        response_format = "url"
+        response_format = "url",
       } = options;
 
       const result = await this._openai.images.generate({
@@ -120,10 +122,54 @@ export class OpenAIService {
           return result.data[0].b64_json;
         }
       }
-      
+
       throw new Error("No image data returned from OpenAI");
     } catch (error) {
       console.error("Error in OpenAI image generation:", error);
+      throw error;
+    }
+  }
+
+  async createEmbedding(text: string): Promise<number[]> {
+    try {
+      const response: CreateEmbeddingResponse =
+        await this.openai.embeddings.create({
+          model: "text-embedding-3-large",
+          input: text,
+        });
+      return response.data[0].embedding;
+    } catch (error) {
+      console.error("Error creating embedding:", error);
+      throw error;
+    }
+  }
+
+  async createJinaEmbedding(text: string): Promise<number[]> {
+    try {
+      const response = await fetch("https://api.jina.ai/v1/embeddings", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.JINA_API_KEY}`,
+        },
+        body: JSON.stringify({
+          model: "jina-embeddings-v3",
+          task: "text-matching",
+          dimensions: 1024,
+          late_chunking: false,
+          embedding_type: "float",
+          input: [text],
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data.data[0].embedding;
+    } catch (error) {
+      console.error("Error creating Jina embedding:", error);
       throw error;
     }
   }
