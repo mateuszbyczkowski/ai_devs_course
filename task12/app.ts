@@ -91,7 +91,7 @@ async function searchReports(): Promise<string | undefined> {
     if (results.length > 0) {
       console.log(`\nBest match: Report from ${results[0]?.payload?.date}`);
       console.log(`Score: ${results[0].score}`);
-      return results[0]?.payload?.date;
+      return results[0]?.payload?.date as string;
     } else {
       console.log("No matching results found");
     }
