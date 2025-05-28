@@ -2,6 +2,7 @@ import { OpenAIService } from "../services/OpenAIService";
 import { VectorService } from "../services/VectorService";
 import fs from "fs/promises";
 import path from "path";
+import { sendAnswerToCentrala } from "./send_answer";
 
 // The query we need to answer
 const query =
@@ -75,7 +76,7 @@ async function initializeData() {
 }
 
 // Search for reports mentioning theft of prototype weapon
-async function searchReports() {
+async function searchReports(): Promise<string | undefined> {
   try {
     console.log(`Searching for answer to: "${query}"`);
 
@@ -88,8 +89,9 @@ async function searchReports() {
     );
 
     if (results.length > 0) {
-      console.log(`\nBest match: Report from ${results[0].payload.date}`);
+      console.log(`\nBest match: Report from ${results[0]?.payload?.date}`);
       console.log(`Score: ${results[0].score}`);
+      return results[0]?.payload?.date;
     } else {
       console.log("No matching results found");
     }
@@ -104,7 +106,10 @@ async function main() {
     await initializeData();
 
     // Search for the answer
-    await searchReports();
+    const result = await searchReports();
+    if (result) {
+      sendAnswerToCentrala(result);
+    }
   } catch (error) {
     console.error("Error in main function:", error);
   }
