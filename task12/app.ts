@@ -1,8 +1,8 @@
+import { sendAnswerToCentrala } from "../services/CentralaAPIService";
 import { OpenAIService } from "../services/OpenAIService";
 import { VectorService } from "../services/VectorService";
 import fs from "fs/promises";
 import path from "path";
-import { sendAnswerToCentrala } from "./send_answer";
 
 // The query we need to answer
 const query =
@@ -108,7 +108,7 @@ async function main() {
     // Search for the answer
     const result = await searchReports();
     if (result) {
-      sendAnswerToCentrala(result);
+      sendAnswerToCentrala(result, "wektory");
     }
   } catch (error) {
     console.error("Error in main function:", error);

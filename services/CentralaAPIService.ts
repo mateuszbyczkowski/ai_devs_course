@@ -1,27 +1,18 @@
 import path from "path";
 import axios from "axios";
-import type { KeywordMap } from "./app";
 import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-export async function sendAnswerToCentrala(keywordMap: KeywordMap) {
+export async function sendAnswerToCentrala(
+  answer: string | Record<string, string> | string[] | number[],
+  task: string,
+) {
   try {
-    // Format the answer in the required structure
-    const answer: Record<string, string> = {};
-
-    // Process each file entry
-    for (const [filename, keywords] of Object.entries(keywordMap)) {
-      const keywordsArray = Array.isArray(keywords) ? keywords : [];
-
-      // Join keywords with commas
-      answer[filename] = keywordsArray.join(",");
-    }
-
     // Create the final payload
     const payload = {
       apikey: process.env.PERSONAL_API_KEY,
-      task: "dokumenty",
+      task,
       answer,
     };
 

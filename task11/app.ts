@@ -2,9 +2,9 @@ import fs from "fs";
 import path from "path";
 import { OpenAIService } from "../services/OpenAIService";
 import { LangfuseService } from "../services/LangfuseService";
-import { sendAnswerToCentrala } from "./send_answer";
 import { v4 as uuidv4 } from "uuid";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
+import { sendAnswerToCentrala } from "../services/CentralaAPIService";
 
 // Define paths
 const baseDir = path.join(__dirname, "pliki_z_fabryki");
@@ -247,7 +247,16 @@ analyzeReports()
     );
     console.log("Results saved to keywords_result.json");
 
-    sendAnswerToCentrala(keywordMap);
+    const answer: Record<string, string> = {};
+
+    // Process each file entry
+    for (const [filename, keywords] of Object.entries(keywordMap)) {
+      const keywordsArray = Array.isArray(keywords) ? keywords : [];
+
+      // Join keywords with commas
+      answer[filename] = keywordsArray.join(",");
+    }
+    sendAnswerToCentrala(answer, "dokumenty");
 
     // Flush any remaining Langfuse events before exiting
     return langfuseService.langfuse.shutdownAsync();
