@@ -9,6 +9,7 @@ When working in the `ai_devs_course` directory:
 - if service from `ai_devs_course/services` matches the scope of the task, but is missing some functionality, you can add it instead of implementing your own service. Example: you need to zip some files. There is already `ZipService` in `ai_devs_course/services`, but it only extracts files from zip. You can add a zipping method to `ZipService` instead of implementing your own service.
 - if some things, like `reportUrl` or `apikey` are unknown, analyze other tasks in the `ai_devs_course` directory and copy necessary values.
 - Use environment variables from `.env` file.
+- Don't use fallback values if not asked directly.
 
 You can freely use all installed npm packages. Installing new ones is also permitted, but you should always check if one of the existing packages can be used instead.
 Try to keep the code clean and organized. Avoid long files and functions. If a file is getting too long, split it into smaller ones.
