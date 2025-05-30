@@ -3,13 +3,9 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 import { OpenAIService } from "../services/OpenAIService";
-import { JSDOM } from "jsdom";
-import TurndownService from "turndown";
-import { writeIndexedContent } from "./utils.js";
 import { fetchAndProcessArticle } from "./articleProcessor.js";
 import { fetchQuestions } from "./questionFetcher.js";
 import { answerQuestions } from "./questionAnswerer.js";
-import util from "util";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
