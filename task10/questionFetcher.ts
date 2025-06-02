@@ -8,7 +8,7 @@ import axios from "axios";
  */
 export async function fetchQuestions(apiKey: string): Promise<Record<string, string>> {
   try {
-    const url = `https://c3ntrala.ag3nts.org/data/${apiKey}/arxiv.txt`;
+    const url = `${process.env.CENTRALA}/data/${apiKey}/arxiv.txt`;
     const response = await axios.get(url);
     
     if (typeof response.data !== 'string') {

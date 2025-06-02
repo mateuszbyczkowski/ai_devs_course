@@ -42,7 +42,7 @@ app.post("/api/chat", async (req, res) => {
   });
 
   const fetchedData = await fetchData(
-    `https://c3ntrala.ag3nts.org/data/${PERSONAL_API_KEY}/json.txt`,
+    `${process.env.CENTRALA}/data/${PERSONAL_API_KEY}/json.txt`,
   );
 
   fetchedData.apikey = PERSONAL_API_KEY;
@@ -130,7 +130,7 @@ async function fetchData(url: string) {
 
 async function getFlag(data: Object) {
   const resp = (
-    await axios.post("https://c3ntrala.ag3nts.org/report", data, {
+    await axios.post(`${process.env.CENTRALA}/report`, data, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",

@@ -350,7 +350,7 @@ async function submitCategorization(
 
   try {
     const response = await axios.post(
-      "https://c3ntrala.ag3nts.org/report",
+      `${process.env.CENTRALA}/report`,
       payload,
       {
         headers: {

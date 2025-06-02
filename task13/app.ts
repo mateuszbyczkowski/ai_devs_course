@@ -106,7 +106,7 @@ async function queryDatabase(query: string): Promise<DatabaseResponse> {
       query,
     };
 
-    const response = await fetch("https://c3ntrala.ag3nts.org/apidb", {
+    const response = await fetch(`${process.env.CENTRALA}/apidb`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

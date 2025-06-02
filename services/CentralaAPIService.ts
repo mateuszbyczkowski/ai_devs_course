@@ -24,7 +24,7 @@ export async function sendAnswerToCentrala(
     try {
       // Send the data to centrala
       const response = await axios.post(
-        "https://c3ntrala.ag3nts.org/report",
+        `${process.env.CENTRALA}/report`,
         payload,
         {
           headers: {

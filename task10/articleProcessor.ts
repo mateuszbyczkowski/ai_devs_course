@@ -243,9 +243,9 @@ export async function fetchAndProcessArticle(
             // Try with the base article URL
             new URL(match.filename, url).href,
             // Try common paths
-            `https://c3ntrala.ag3nts.org/dane/${match.filename}`,
-            `https://c3ntrala.ag3nts.org/dane/audio/${match.filename}`,
-            `https://c3ntrala.ag3nts.org/dane/i/${match.filename}`,
+            `${process.env.CENTRALA}/dane/${match.filename}`,
+            `${process.env.CENTRALA}/dane/audio/${match.filename}`,
+            `${process.env.CENTRALA}/dane/i/${match.filename}`,
           ].filter(Boolean); // Remove null entries
 
           // Try each URL until we find one that works
@@ -324,9 +324,9 @@ export async function fetchAndProcessArticle(
 
           // Try common paths for this audio file
           const possibleUrls = [
-            `https://c3ntrala.ag3nts.org/dane/${audioFilename}`,
-            `https://c3ntrala.ag3nts.org/dane/audio/${audioFilename}`,
-            `https://c3ntrala.ag3nts.org/dane/i/${audioFilename}`,
+            `${process.env.CENTRALA}/dane/${audioFilename}`,
+            `${process.env.CENTRALA}/dane/audio/${audioFilename}`,
+            `${process.env.CENTRALA}/dane/i/${audioFilename}`,
           ];
 
           // Try each URL until we find one that works

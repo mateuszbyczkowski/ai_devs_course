@@ -31,7 +31,7 @@ async function submitData(anonymizedData: string) {
   };
 
   const resp = (
-    await axios.post("https://c3ntrala.ag3nts.org/report", response, {
+    await axios.post(`${process.env.CENTRALA}/report`, response, {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -43,7 +43,7 @@ async function submitData(anonymizedData: string) {
 
 export async function zad5(req?: any) {
   const realData = await fetchData(
-    `https://c3ntrala.ag3nts.org/data/${process.env.PERSONAL_API_KEY}/cenzura.txt`,
+    `${process.env.CENTRALA}/data/${process.env.PERSONAL_API_KEY}/cenzura.txt`,
   );
 
   console.log("REAL DATA: " + realData);

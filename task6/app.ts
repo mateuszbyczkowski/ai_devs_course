@@ -465,7 +465,7 @@ async function submitResult(streetName: string): Promise<void> {
       throw new Error("API key not found in environment variables");
     }
 
-    const response = await axios.post("https://c3ntrala.ag3nts.org/report", {
+    const response = await axios.post(`${process.env.CENTRALA}/report`, {
       apikey: apiKey,
       task: "mp3",
       answer: streetName,

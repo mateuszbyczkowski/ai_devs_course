@@ -12,7 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env") });
 import axios from "axios";
 
 async function fetchRobotDescription(apiKey: string): Promise<string> {
-  const url = `https://c3ntrala.ag3nts.org/data/${apiKey}/robotid.json`;
+  const url = `${process.env.CENTRALA}/data/${apiKey}/robotid.json`;
   try {
     const response = await axios.get(url, { timeout: 10000 });
     if (typeof response.data === "string") {
@@ -123,7 +123,7 @@ async function reportImageUrl(apiKey: string, imageUrl: string): Promise<void> {
     answer: imageUrl,
   };
   try {
-    const response = await axios.post("https://c3ntrala.ag3nts.org/report", payload, {
+    const response = await axios.post(`${process.env.CENTRALA}/report`, payload, {
       headers: { "Content-Type": "application/json" },
       timeout: 10000,
     });

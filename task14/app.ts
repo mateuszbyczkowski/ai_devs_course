@@ -56,7 +56,7 @@ async function queryPeopleApi(name: string): Promise<string[]> {
       return [];
     }
 
-    const response = await axios.post("https://c3ntrala.ag3nts.org/people", {
+    const response = await axios.post(`${process.env.CENTRALA}/people`, {
       apikey: process.env.PERSONAL_API_KEY,
       query: name.toUpperCase(),
     });
@@ -91,7 +91,7 @@ async function queryPlacesApi(place: string): Promise<string[]> {
       return [];
     }
 
-    const response = await axios.post("https://c3ntrala.ag3nts.org/places", {
+    const response = await axios.post(`${process.env.CENTRALA}/places`, {
       apikey: process.env.PERSONAL_API_KEY,
       query: place.toUpperCase(),
     });

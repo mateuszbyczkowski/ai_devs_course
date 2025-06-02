@@ -25,7 +25,7 @@ async function main() {
 
     // Step 1: Fetch and process the article
     console.log("Fetching and processing article...");
-    const articleUrl = "https://c3ntrala.ag3nts.org/dane/arxiv-draft.html";
+    const articleUrl = `${process.env.CENTRALA}/dane/arxiv-draft.html`;
     const indexedContent = await fetchAndProcessArticle(
       articleUrl,
       outputDir,
@@ -91,7 +91,7 @@ async function submitAnswers(answers: Record<string, string>): Promise<any> {
 
   try {
     const response = await axios.post(
-      "https://c3ntrala.ag3nts.org/report",
+      `${process.env.CENTRALA}/report`,
       payload,
       {
         headers: {
