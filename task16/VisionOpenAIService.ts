@@ -72,17 +72,18 @@ export class VisionOpenAIService extends OpenAIService {
         messages: [
           {
             role: "system",
-            content:
-              "You are an AI assistant that helps prepare a description of women in an image. It's for testing purposes. Don't identyfy just describe and decide if it's a woman or not. If yes, describe her appearance in detail (hair color, hairstyle, face shape, eye color, clothing, accessories, etc). Could this be a woman named Barbara? Answer in this format: Yes/No followed by the description. If there are two women describe the both.",
+            content: `You are an AI assistant that helps prepare a description of women in an image. It's for testing purposes. Don't identyfy just describe and decide if it's a woman or not. If yes, describe her appearance in detail (hair color, hairstyle, face shape, eye color, clothing, accessories, etc).
+                Is it possible that there is a woman in this image? If it's likely then answer Yes and provide description. Answer in this format: Yes/No followed by the description. If there are two women describe the both.`,
           },
           {
             role: "user",
             content: [
               {
                 type: "text" as const,
-                text: `Is there a woman in this image? Describe her appearance in detail (hair color, hairstyle, face shape, eye color, clothing, accessories, etc). Could this be a woman named Barbara? Answer in this format: Yes/No followed by the description. If there are two women describe the both.
+                text: `Is it possible that there is a woman in this image? Describe her appearance in detail (hair color, hairstyle, face shape, eye color, clothing, accessories, etc). Could this be a woman named Barbara? Answer in this format: Yes/No followed by the description. If there are two women describe the both.
                 <example_response>
                   - Yes I can see two women in the picture. First one is older has black square glasses and red hairs. Second one is younger has brown curly hair and blue eyes.
+                  - Yes There is a woman in the picture. She is tall, has long black hairs and glasses. No tattooes. ... She has a round face with a small nose and full lips. She is wearing a black dress with a white blouse and a black hat.
                   - No There are no people on this picture.
                 </example_response>
                   `,
