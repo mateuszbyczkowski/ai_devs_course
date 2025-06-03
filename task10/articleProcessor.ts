@@ -20,11 +20,11 @@ export async function fetchAndProcessArticle(
   try {
     // Fetch the article
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
-    
+
     const html = await response.text();
 
     // Parse HTML
@@ -509,21 +509,21 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
     }
 
     const fileStream = fs.createWriteStream(outputPath);
-    
+
     return new Promise((resolve, reject) => {
       const stream = response.body;
-      
+
       if (!stream) {
         reject(new Error("Response body is null"));
         return;
       }
-      
+
       // Convert web stream to Node.js stream
-      const nodeStream = Readable.fromWeb(stream as ReadableStream);
-      
+      const nodeStream = Readable.fromWeb(stream as unknown as import("stream/web").ReadableStream);
+
       // Pipe to file stream
       nodeStream.pipe(fileStream);
-      
+
       let error: Error | null = null;
       fileStream.on("error", (err) => {
         error = err;
@@ -541,7 +541,7 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
     });
   } catch (error: any) {
     console.error(`Error downloading file from ${url}:`, error.message);
-    
+
     // With fetch API, we don't have response details in the error object
     // so we just log what information we have
     throw error;
