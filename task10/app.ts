@@ -1,11 +1,11 @@
 import dotenv from "dotenv";
 import fs from "fs";
 import path from "path";
-import axios from "axios";
+
 import { OpenAIService } from "../services/OpenAIService";
-import { fetchAndProcessArticle } from "./articleProcessor.js";
-import { fetchQuestions } from "./questionFetcher.js";
-import { answerQuestions } from "./questionAnswerer.js";
+import { fetchAndProcessArticle } from "./articleProcessor.ts";
+import { fetchQuestions } from "./questionFetcher.ts";
+import { answerQuestions } from "./questionAnswerer.ts";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
@@ -90,23 +90,29 @@ async function submitAnswers(answers: Record<string, string>): Promise<any> {
   );
 
   try {
-    const response = await axios.post(
+    const response = await fetch(
       `${process.env.CENTRALA}/report`,
-      payload,
       {
+        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-      },
+        body: JSON.stringify(payload)
+      }
     );
-    return response.data;
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    return await response.json();
   } catch (error: any) {
     console.error("Error submitting answers:", error.message);
-    if (error.response && error.response.data) {
+    if (error.response) {
       console.error("Response data:", error.response.data);
     }
-    throw new Error();
+    throw error;
   }
 }
 

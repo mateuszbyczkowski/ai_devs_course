@@ -1,7 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { Readable } from "stream";
-import axios from "axios";
 import dotenv from "dotenv";
 import { v4 as uuidv4 } from "uuid";
 import { OpenAIService } from "../services/OpenAIService";
@@ -465,13 +463,23 @@ async function submitResult(streetName: string): Promise<void> {
       throw new Error("API key not found in environment variables");
     }
 
-    const response = await axios.post(`${process.env.CENTRALA}/report`, {
-      apikey: apiKey,
-      task: "mp3",
-      answer: streetName,
+    const response = await fetch(`${process.env.CENTRALA}/report`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        apikey: apiKey,
+        task: "mp3",
+        answer: streetName,
+      }),
     });
 
-    console.log("API Response:", response.data);
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    console.log("API Response:", await response.json());
   } catch (error) {
     console.error("Error submitting result:", error);
     throw error;

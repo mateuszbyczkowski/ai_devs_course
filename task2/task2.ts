@@ -2,7 +2,6 @@ import express from "express";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 import { OpenAIService } from "../services/OpenAIService.ts";
-import axios from "axios";
 import type OpenAI from "openai";
 import { cleanRobotMemory, isoAnswersContextPrompt } from "../prompts.ts";
 
@@ -108,8 +107,12 @@ async function getRoboISOQuestions(text: string) {
 
 async function fetchData(url: string) {
   try {
-    const response = await axios.get(url);
-    return response.data;
+    const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+    return await response.json();
   } catch (error) {
     console.error("Error fetching data:", error);
   }
@@ -117,14 +120,20 @@ async function fetchData(url: string) {
 
 async function talkToRobot(data: RobotMessageParams) {
   console.log("###HUMAN:", data.text);
-  const resp = (
-    await axios.post("https://xyz.ag3nts.org/verify", data, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-  ).data as RobotMessageParams;
+  const response = await fetch("https://xyz.ag3nts.org/verify", {
+    method: 'POST',
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  const resp = await response.json() as RobotMessageParams;
   console.log("###ROBOT:", resp.text);
   return resp;
 }

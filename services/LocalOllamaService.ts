@@ -1,5 +1,3 @@
-import axios from "axios";
-
 export class LocalOllamaService {
   // ollama for docker
   // docker exec -it ollama ollama run qwen3:4b
@@ -9,23 +7,27 @@ export class LocalOllamaService {
     stream: boolean = false,
   ): Promise<any> {
     try {
-      const chatCompletion = (
-        await axios.post(
-          "http://localhost:11434/api/generate",
-          {
+      const response = await fetch(
+        "http://localhost:11434/api/generate",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/*",
+            "Content-Type": "application/*",
+          },
+          body: JSON.stringify({
             prompt,
             model,
             stream,
-          },
-          {
-            headers: {
-              Accept: "application/*",
-              "Content-Type": "application/*",
-            },
-          },
-        )
-      ).data;
+          }),
+        }
+      );
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const chatCompletion = await response.json();
       return chatCompletion;
     } catch (error) {
       console.error("Error in OpenAI completion:", error);

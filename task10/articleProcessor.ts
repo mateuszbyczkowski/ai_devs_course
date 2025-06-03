@@ -1,10 +1,10 @@
 import fs from "fs";
 import path from "path";
-import axios from "axios";
 import { JSDOM } from "jsdom";
 import TurndownService from "turndown";
 import { OpenAIService } from "../services/OpenAIService";
 import { createReadStream } from "fs";
+import { Readable } from "stream";
 
 /**
  * Fetches and processes the article from the given URL
@@ -19,8 +19,13 @@ export async function fetchAndProcessArticle(
 ): Promise<string> {
   try {
     // Fetch the article
-    const response = await axios.get(url);
-    const html = response.data;
+    const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const html = await response.text();
 
     // Parse HTML
     const dom = new JSDOM(html);
@@ -483,18 +488,19 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
 
     console.log(`Downloading: ${path.basename(url)}`);
 
-    const response = await axios({
+    const response = await fetch(url, {
       method: "GET",
-      url: url,
-      responseType: "stream",
-      timeout: 30000, // 30 second timeout
       headers: {
         Accept: "*/*",
         "User-Agent":
           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.110 Safari/537.36",
       },
-      maxRedirects: 5,
+      signal: AbortSignal.timeout(30000), // 30 second timeout
     });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
 
     // Make sure the directory exists
     const directory = path.dirname(outputPath);
@@ -502,19 +508,30 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
       fs.mkdirSync(directory, { recursive: true });
     }
 
-    const writer = fs.createWriteStream(outputPath);
-
+    const fileStream = fs.createWriteStream(outputPath);
+    
     return new Promise((resolve, reject) => {
-      response.data.pipe(writer);
-
+      const stream = response.body;
+      
+      if (!stream) {
+        reject(new Error("Response body is null"));
+        return;
+      }
+      
+      // Convert web stream to Node.js stream
+      const nodeStream = Readable.fromWeb(stream as ReadableStream);
+      
+      // Pipe to file stream
+      nodeStream.pipe(fileStream);
+      
       let error: Error | null = null;
-      writer.on("error", (err) => {
+      fileStream.on("error", (err) => {
         error = err;
-        writer.close();
+        fileStream.close();
         reject(err);
       });
 
-      writer.on("close", () => {
+      fileStream.on("close", () => {
         if (!error) {
           console.log(`Downloaded: ${path.basename(outputPath)}`);
           resolve();
@@ -524,13 +541,9 @@ async function downloadFile(url: string, outputPath: string): Promise<void> {
     });
   } catch (error: any) {
     console.error(`Error downloading file from ${url}:`, error.message);
-
-    // If the error has a response property, log additional details
-    if (error.response) {
-      console.error(`Status: ${error.response.status}`);
-      console.error(`Headers: ${JSON.stringify(error.response.headers)}`);
-    }
-
+    
+    // With fetch API, we don't have response details in the error object
+    // so we just log what information we have
     throw error;
   }
 }

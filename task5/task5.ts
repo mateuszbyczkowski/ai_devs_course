@@ -12,7 +12,7 @@ if (require.main === module || import.meta.main) {
   });
 }
 
-import axios from "axios";
+
 import { anonymizeDataPrompt } from "../prompts.ts";
 import { OpenAIService } from "../services/OpenAIService.ts";
 import { LocalOllamaService } from "../services/LocalOllamaService.ts";
@@ -24,20 +24,26 @@ import "dotenv/config";
 const openaiService = new OpenAIService();
 
 async function submitData(anonymizedData: string) {
-  const response = {
+  const payload = {
     task: "CENZURA",
     apikey: process.env.PERSONAL_API_KEY,
     answer: anonymizedData,
   };
 
-  const resp = (
-    await axios.post(`${process.env.CENTRALA}/report`, response, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-  ).data;
+  const response = await fetch(`${process.env.CENTRALA}/report`, {
+    method: 'POST',
+    headers: { 
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  const resp = await response.json();
   return resp;
 }
 
@@ -99,9 +105,14 @@ async function anonymizeData(text: string) {
 
 async function fetchData(url: string) {
   try {
-    const response = await axios.get(url);
-    return response.data;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return await response.text();
   } catch (error) {
     console.error("Error fetching data:", error);
+    throw error;
   }
 }

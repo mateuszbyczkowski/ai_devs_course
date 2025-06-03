@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import dotenv from "dotenv";
-import axios from "axios";
 import { OpenAIService } from "../services/OpenAIService";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import { sendAnswerToCentrala } from "../services/CentralaAPIService";
@@ -56,18 +55,27 @@ async function queryPeopleApi(name: string): Promise<string[]> {
       return [];
     }
 
-    const response = await axios.post(`${process.env.CENTRALA}/people`, {
-      apikey: process.env.PERSONAL_API_KEY,
-      query: name.toUpperCase(),
+    const response = await fetch(`${process.env.CENTRALA}/people`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apikey: process.env.PERSONAL_API_KEY,
+        query: name.toUpperCase(),
+      })
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
     console.log(
       `Response for ${name}:`,
-      JSON.stringify(response.data, null, 2),
+      JSON.stringify(responseData, null, 2),
     );
 
     // Extract places from the message string
-    const apiResponse = response.data as ApiResponse;
+    const apiResponse = responseData as ApiResponse;
     if (apiResponse.code === 0 && apiResponse.message) {
       return apiResponse.message.split(" ");
     }
@@ -91,17 +99,27 @@ async function queryPlacesApi(place: string): Promise<string[]> {
       return [];
     }
 
-    const response = await axios.post(`${process.env.CENTRALA}/places`, {
-      apikey: process.env.PERSONAL_API_KEY,
-      query: place.toUpperCase(),
+    const response = await fetch(`${process.env.CENTRALA}/places`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apikey: process.env.PERSONAL_API_KEY,
+        query: place.toUpperCase(),
+      })
     });
 
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const responseData = await response.json();
     console.log(
       `Response for ${place}:`,
-      JSON.stringify(response.data, null, 2),
+      JSON.stringify(responseData, null, 2),
     );
 
-    const apiResponse = response.data as ApiResponse;
+    // Extract places from the message string
+    const apiResponse = responseData as ApiResponse;
     if (apiResponse.code === 0 && apiResponse.message) {
       return apiResponse.message.split(" ");
     }

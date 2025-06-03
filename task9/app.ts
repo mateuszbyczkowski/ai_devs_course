@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import fs from "fs";
-import axios from "axios";
 import { OpenAIService } from "../services/OpenAIService";
 import {
   type FileContent,
@@ -349,17 +348,23 @@ async function submitCategorization(
   };
 
   try {
-    const response = await axios.post(
+    const response = await fetch(
       `${process.env.CENTRALA}/report`,
-      payload,
       {
+        method: "POST",
         headers: {
           Accept: "application/json",
           "Content-Type": "application/json",
         },
-      },
+        body: JSON.stringify(payload)
+      }
     );
-    return response.data;
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    return await response.json();
   } catch (error) {
     console.error("Error submitting categorization:", error);
     throw error;

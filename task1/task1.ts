@@ -2,7 +2,6 @@ import express from "express";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 
 import { OpenAIService } from "../services/OpenAIService.ts";
-import axios from "axios";
 import type OpenAI from "openai";
 import { useShortAnswerPrompt } from "../prompts.ts";
 
@@ -76,19 +75,34 @@ function getCaptchaQuestion(html: string) {
 
 async function fetchData(url: string) {
   try {
-    const response = await axios.get(url);
-    console.log(response.data);
-    return response.data;
+    const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+    console.log(await response.json());
+    return await response.json();
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 }
 
 async function postData(data: URLSearchParams) {
-  return await axios.post("https://xyz.ag3nts.org/", data.toString(), {
+  const response = await fetch("https://xyz.ag3nts.org/", {
+    method: 'POST',
     headers: {
       accept: "text/html",
       "Content-Type": "application/x-www-form-urlencoded",
     },
+    body: data.toString()
   });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  return {
+    status: response.status,
+    data: await response.text()
+  };
 }

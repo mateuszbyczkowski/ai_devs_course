@@ -1,5 +1,3 @@
-import axios from "axios";
-
 /**
  * Fetches questions from the centrala API using the provided API key
  * 
@@ -9,15 +7,21 @@ import axios from "axios";
 export async function fetchQuestions(apiKey: string): Promise<Record<string, string>> {
   try {
     const url = `${process.env.CENTRALA}/data/${apiKey}/arxiv.txt`;
-    const response = await axios.get(url);
+    const response = await fetch(url);
     
-    if (typeof response.data !== 'string') {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    
+    const data = await response.text();
+    
+    if (typeof data !== 'string') {
       throw new Error("Unexpected response format");
     }
     
     // Parse the questions from the response
     // Expected format: lines with "XX=Question text"
-    const questionsData = response.data.trim().split('\n');
+    const questionsData = data.trim().split('\n');
     const questions: Record<string, string> = {};
     
     for (const line of questionsData) {

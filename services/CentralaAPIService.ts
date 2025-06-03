@@ -1,5 +1,4 @@
 import path from "path";
-import axios from "axios";
 import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -23,25 +22,23 @@ export async function sendAnswerToCentrala(
 
     try {
       // Send the data to centrala
-      const response = await axios.post(
-        `${process.env.CENTRALA}/report`,
-        payload,
-        {
-          headers: {
-            "Content-Type": "application/json; charset=utf-8",
-          },
+      const response = await fetch(`${process.env.CENTRALA}/report`, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
         },
-      );
+        body: JSON.stringify(payload)
+      });
 
-      console.log("Centrala response:", response.data);
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log("Centrala response:", data);
+      return data;
     } catch (error: any) {
       console.error("Error sending answer to centrala:", error.message);
-      if (error.response) {
-        console.error("Response data:", error.response.data);
-        console.error("Response status:", error.response.status);
-        console.error("Response headers:", error.response.headers);
-      }
       throw error;
     }
   } catch (error) {

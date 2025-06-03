@@ -5,7 +5,6 @@ import type {
 } from "openai/resources/chat/completions";
 
 import { OpenAIService } from "../services/OpenAIService.ts";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { LangfuseService } from "../services/LangfuseService.ts";
 
@@ -121,23 +120,32 @@ app.post("/api/chat", async (req, res) => {
 
 async function fetchData(url: string) {
   try {
-    const response = await axios.get(url);
-    return response.data;
+    const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+    return await response.json();
   } catch (error) {
     console.error("Error fetching data:", error);
   }
 }
 
 async function getFlag(data: Object) {
-  const resp = (
-    await axios.post(`${process.env.CENTRALA}/report`, data, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    })
-  ).data;
+  const response = await fetch(`${process.env.CENTRALA}/report`, {
+    method: 'POST',
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  });
 
+  if (!response.ok) {
+    throw new Error(`HTTP error! Status: ${response.status}`);
+  }
+
+  const resp = await response.json();
   console.log(resp);
   return resp;
 }

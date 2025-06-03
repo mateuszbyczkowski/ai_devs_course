@@ -1,4 +1,3 @@
-import axios from "axios";
 import dotenv from "dotenv";
 import path from "path";
 
@@ -24,21 +23,26 @@ export class CentralaService {
 
   async sendMessage(message: string): Promise<any> {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${this.centralaUrl}/report`,
         {
-          task: "photos",
-          apikey: this.apiKey,
-          answer: message,
-        },
-        {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-        },
+          body: JSON.stringify({
+            task: "photos",
+            apikey: this.apiKey,
+            answer: message,
+          }),
+        }
       );
 
-      return response.data;
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      return await response.json();
     } catch (error) {
       console.error("Error communicating with centrala:", error);
       throw error;
