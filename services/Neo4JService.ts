@@ -1,4 +1,5 @@
-import neo4j, { Driver, Session, Result, Integer } from "neo4j-driver";
+import { Driver, Session, Result, Integer } from "neo4j-driver";
+import * as neo4j from "neo4j-driver";
 import { Record as Neo4jRecord } from "neo4j-driver";
 import { OpenAIService } from "./OpenAIService";
 
