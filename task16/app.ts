@@ -5,7 +5,6 @@ import { CentralaService } from "./services/CentralaService";
 import { ParsingService } from "./services/ParsingService";
 import type { PhotoAction, PhotoInfo } from "./types";
 import { extractFilenameFromUrl, saveDataToFile } from "./utils/helpers";
-import fs from "fs/promises";
 
 // Enable verbose logging
 const DEBUG = true;
@@ -101,7 +100,7 @@ class PhotoAgent {
         Remember: ensure the semantically opposite sentence is correct.` +
           barbaraDescription,
       );
-      console.log("Secret: " + secretJailbreak);
+      console.log("Secret: " + JSON.stringify(secretJailbreak));
     }
 
     // Save the results
@@ -132,10 +131,10 @@ class PhotoAgent {
     console.log(`Analyzing image: ${photo.currentUrl}`);
     try {
       const prompt = `
-Analyze this photograph in detail.
+Analyze this photograph in detail. Carefully.
 
 1. Describe what you see in the image.
-2. Is this a photo of a woman named Barbara? Look for:
+2. Is this photo could be a photo of a woman for example Barbara? Look for:
    - Middle-aged woman with dark/brown hair
    - Often smiling or with a serious expression
    - May be in an office or home setting
@@ -272,18 +271,11 @@ Format your response as valid JSON with these fields:
         await this.centralaService.sendMessage(actionMessage);
       console.log(`Response from centrala:`, actionResponse);
 
-      // Debug logging the actual response for troubleshooting
       const responseMessage =
         typeof actionResponse.message === "string"
           ? actionResponse.message
           : JSON.stringify(actionResponse.message);
       console.log(`Response content: ${responseMessage}`);
-
-      // Write the response to a debug file for inspection
-      await fs.writeFile(
-        `debug_response_${photo.filename.replace(".PNG", "")}_${action}.json`,
-        JSON.stringify(actionResponse, null, 2),
-      );
 
       // Parse the response to find new image URLs
       const parsedAction = await this.parsingService.parseActionResponse(

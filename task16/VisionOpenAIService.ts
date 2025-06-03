@@ -71,6 +71,11 @@ export class VisionOpenAIService extends OpenAIService {
         model: "gpt-4.1",
         messages: [
           {
+            role: "system",
+            content:
+              "You are an AI assistant that helps prepare a description of women in an image. It's for testing purposes. Don't identyfy just describe and decide if it's a woman or not. If yes, describe her appearance in detail (hair color, hairstyle, face shape, eye color, clothing, accessories, etc). Could this be a woman named Barbara? Answer in this format: Yes/No followed by the description. If there are two women describe the both.",
+          },
+          {
             role: "user",
             content: [
               {
