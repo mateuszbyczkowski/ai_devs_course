@@ -4,7 +4,6 @@ import { VisionOpenAIService } from "./VisionOpenAIService";
 import { CentralaService } from "./services/CentralaService";
 import { ParsingService } from "./services/ParsingService";
 import type { PhotoAction, PhotoInfo } from "./types";
-import { extractFilenameFromUrl, saveDataToFile } from "./utils/helpers";
 
 // Enable verbose logging
 const DEBUG = true;
@@ -47,7 +46,7 @@ class PhotoAgent {
 
     // Create initial queue of photos to process
     for (const url of parsedResponse.urls) {
-      const filename = await extractFilenameFromUrl(url);
+      const filename = await this.extractFilenameFromUrl(url);
 
       if (!this.processedFilenames.has(filename)) {
         this.processedFilenames.add(filename);
@@ -102,10 +101,12 @@ class PhotoAgent {
       );
       console.log("Secret: " + JSON.stringify(secretJailbreak));
     }
-
-    // Save the results
-    await saveDataToFile(this.photos, "image_summary.json");
     console.log("Task completed successfully!");
+  }
+
+  private async extractFilenameFromUrl(url: string): Promise<string> {
+    const parts = url.split("/");
+    return parts[parts.length - 1];
   }
 
   private async processNextPhoto(photo: PhotoInfo): Promise<void> {
@@ -293,7 +294,7 @@ Format your response as valid JSON with these fields:
         console.log(`Got new image URL: ${newUrl}`);
 
         // Extract filename
-        const newFilename = await extractFilenameFromUrl(newUrl);
+        const newFilename = await this.extractFilenameFromUrl(newUrl);
         console.log(`New filename: ${newFilename}`);
 
         // Skip if we're getting the same filename (no actual change)
@@ -352,7 +353,7 @@ Format your response as valid JSON with these fields:
           console.log(`Found URLs directly in message: ${matches[0]}`);
 
           const newUrl = matches[0];
-          const newFilename = await extractFilenameFromUrl(newUrl);
+          const newFilename = await this.extractFilenameFromUrl(newUrl);
 
           if (!this.processedFilenames.has(newFilename)) {
             console.log(
