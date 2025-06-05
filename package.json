@@ -27,7 +27,8 @@
     "task14": "bun run task14/app.ts",
     "task15": "bun run task15/app.ts",
     "task16": "bun run task16/app.ts",
-    "task17": "bun run task17/app.ts"
+    "task17": "bun run task17/app.ts",
+    "task18": "bun run task18/app.ts"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"

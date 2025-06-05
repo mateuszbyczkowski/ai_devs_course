@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
 export async function sendAnswerToCentrala(
-  answer: string | Record<string, string> | string[] | number[],
+  answer: string | Record<string, string> | string[] | number[] | object | object[],
   task: string,
 ) {
   try {
