@@ -20,7 +20,7 @@ class SoftoAgent {
   private turndown: TurndownService;
   private visitedUrls: Set<string> = new Set();
   private baseUrl = "https://softo.ag3nts.org";
-  private maxDepth = 10;
+  private maxDepth = 5;
 
   constructor() {
     this.openai = new OpenAIService();
