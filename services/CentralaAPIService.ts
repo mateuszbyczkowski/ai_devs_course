@@ -3,6 +3,9 @@ import dotenv from "dotenv";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
+// Disable SSL certificate verification for self-signed certificates
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 export async function sendAnswerToCentrala(
   answer: string | Record<string, string> | string[] | number[] | object | object[],
   task: string,
