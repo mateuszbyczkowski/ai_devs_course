@@ -9,37 +9,6 @@ import { sendAnswerToCentrala } from "../services/CentralaAPIService";
 
 const execAsync = promisify(exec);
 
-// Configuration
-const CONFIG = {
-  MAX_RETRIES: 10,
-  PDF_FILENAME: "notatnik-rafala.pdf",
-  PAGE_19_INDEX: 18, // Zero-based index for page 19
-  IMAGES_DIR: "images",
-  OUTPUT_IMAGE: "page19.png",
-  VISION_MODELS: ["gpt-4.1"],
-  VISION_PROMPTS: [
-    "Przepisz dokładnie CAŁY tekst napisany odręcznie na tym obrazku, słowo po słowie:",
-    "Transcribe ALL handwritten text visible in this Polish document image, word by word:",
-    "Odczytaj i przepisz każde słowo napisane odręcznie na tym dokumencie:",
-  ],
-} as const;
-
-// Detect ImageMagick command
-async function detectImageMagickCommand(): Promise<string> {
-  const commands = ["magick", "convert"];
-
-  for (const cmd of commands) {
-    try {
-      await execAsync(`which ${cmd}`);
-      return cmd;
-    } catch {
-      continue;
-    }
-  }
-
-  throw new Error("ImageMagick not found. Please install ImageMagick.");
-}
-
 interface Question {
   [key: string]: string;
 }
@@ -108,7 +77,7 @@ class NotebookAnalyzer {
   }
 
   private async extractTextFromPdf(): Promise<void> {
-    const pdfPath = path.join(__dirname, CONFIG.PDF_FILENAME);
+    const pdfPath = path.join(__dirname, "notatnik-rafala.pdf");
     const dataBuffer = fs.readFileSync(pdfPath);
     const data = await pdf(dataBuffer);
 
@@ -117,8 +86,8 @@ class NotebookAnalyzer {
   }
 
   private async extractImageFromPage19(): Promise<string> {
-    const outputDir = path.join(__dirname, CONFIG.IMAGES_DIR);
-    const outputPath = path.join(outputDir, CONFIG.OUTPUT_IMAGE);
+    const outputDir = path.join(__dirname, "images");
+    const outputPath = path.join(outputDir, "page19.png");
 
     if (fs.existsSync(outputPath)) {
       console.log("Page 19 image already exists");
@@ -131,11 +100,8 @@ class NotebookAnalyzer {
       fs.mkdirSync(outputDir, { recursive: true });
     }
 
-    const pdfPath = path.join(__dirname, CONFIG.PDF_FILENAME);
-    const magickCmd = await detectImageMagickCommand();
-    const convertArgs = magickCmd === "magick" ? "convert" : "";
-    const command =
-      `${magickCmd} ${convertArgs} -density 300 -colorspace Gray -normalize "${pdfPath}[${CONFIG.PAGE_19_INDEX}]" -quality 85 -resize 1600x "${outputPath}"`.trim();
+    const pdfPath = path.join(__dirname, "notatnik-rafala.pdf");
+    const command = `magick convert -density 300 -colorspace Gray -normalize "${pdfPath}[18]" -quality 85 -resize 1600x "${outputPath}"`;
 
     try {
       await execAsync(command);
@@ -154,23 +120,42 @@ class NotebookAnalyzer {
   private async analyzeImageWithVision(imagePath: string): Promise<string> {
     console.log("Analyzing page 19 with Vision...");
 
-    for (const model of CONFIG.VISION_MODELS) {
-      for (const prompt of CONFIG.VISION_PROMPTS) {
-        try {
-          return await this.openaiService.analyzeImage({
-            imagePath,
-            prompt,
-            model,
-            maxTokens: 4000,
-          });
-        } catch (error) {
-          console.log(`❌ Model ${model} failed: ${(error as Error).message}`);
-          continue;
+    const prompts = [
+      "Przepisz dokładnie CAŁY tekst napisany odręcznie na tym obrazku, słowo po słowie:",
+      "Transcribe ALL handwritten text visible in this Polish document image, word by word:",
+      "Odczytaj i przepisz każde słowo napisane odręcznie na tym dokumencie:",
+    ];
+
+    for (const prompt of prompts) {
+      try {
+        const extractedText = await this.openaiService.analyzeImage({
+          imagePath,
+          prompt,
+          model: "gpt-4.1",
+          maxTokens: 3000,
+        });
+
+        if (this.isValidVisionResponse(extractedText)) {
+          console.log(`✅ Vision analysis successful with model: gpt-4.1`);
+          return extractedText;
         }
+      } catch (error) {
+        console.log(`❌ Model gpt-4.1 failed: ${(error as Error).message}`);
+        continue;
       }
     }
 
     throw new Error("All vision analysis attempts failed");
+  }
+
+  private isValidVisionResponse(text: string): boolean {
+    const invalidKeywords = ["sorry", "can't", "unable", "assist", "nie mogę"];
+    const lowerText = text.toLowerCase();
+
+    return (
+      text.length > 50 &&
+      !invalidKeywords.some((keyword) => lowerText.includes(keyword))
+    );
   }
 
   private async prepareFullContext(): Promise<void> {
@@ -322,8 +307,8 @@ ODPOWIEDŹ (tylko konkretna informacja, bez wyjaśnień):`;
 
       // Download required files
       await this.downloadFile(
-        `${this.centralaUrl}/dane/${CONFIG.PDF_FILENAME}`,
-        CONFIG.PDF_FILENAME,
+        `${this.centralaUrl}/dane/notatnik-rafala.pdf`,
+        "notatnik-rafala.pdf",
       );
       await this.downloadQuestions();
 
@@ -334,8 +319,9 @@ ODPOWIEDŹ (tylko konkretna informacja, bez wyjaśnień):`;
       await this.answerAllQuestions();
 
       let retryCount = 0;
+      const maxRetries = 5;
 
-      while (retryCount <= CONFIG.MAX_RETRIES) {
+      while (retryCount <= maxRetries) {
         try {
           const response = await this.submitAnswers();
 
@@ -344,7 +330,7 @@ ODPOWIEDŹ (tylko konkretna informacja, bez wyjaśnień):`;
             return;
           }
         } catch (error: any) {
-          if (retryCount >= CONFIG.MAX_RETRIES) {
+          if (retryCount >= maxRetries) {
             console.log("❌ Task failed after all retries");
             throw error;
           }
