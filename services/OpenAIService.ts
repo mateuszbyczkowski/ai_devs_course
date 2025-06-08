@@ -2,6 +2,7 @@ import OpenAI from "openai";
 import type { ChatCompletionMessageParam } from "openai/resources/chat/completions";
 import type { CreateEmbeddingResponse } from "openai/resources/embeddings";
 import { ReadStream } from "fs";
+import fs from "fs";
 
 export class OpenAIService {
   private _openai: OpenAI;
@@ -170,6 +171,61 @@ export class OpenAIService {
       return data.data[0].embedding;
     } catch (error) {
       console.error("Error creating Jina embedding:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Analyzes an image using OpenAI's vision model
+   *
+   * @param options - Options for image analysis
+   * @returns Analyzed text from the image
+   */
+  async analyzeImage(options: {
+    imagePath: string;
+    prompt: string;
+    model?: string;
+    maxTokens?: number;
+  }): Promise<string> {
+    try {
+      const { imagePath, prompt, model = "gpt-4o", maxTokens = 1000 } = options;
+
+      // Read image file and convert to base64
+      const imageBuffer = fs.readFileSync(imagePath);
+      const base64Image = imageBuffer.toString('base64');
+      const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+
+      const messages: ChatCompletionMessageParam[] = [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: prompt,
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:${mimeType};base64,${base64Image}`,
+              },
+            },
+          ],
+        },
+      ];
+
+      const response = await this._openai.chat.completions.create({
+        model,
+        messages,
+        max_tokens: maxTokens,
+      });
+
+      if (response.choices?.[0]?.message?.content) {
+        return response.choices[0].message.content.trim();
+      }
+
+      throw new Error("No content returned from vision analysis");
+    } catch (error) {
+      console.error("Error in OpenAI vision analysis:", error);
       throw error;
     }
   }

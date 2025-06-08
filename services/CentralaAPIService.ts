@@ -33,11 +33,13 @@ export async function sendAnswerToCentrala(
         body: JSON.stringify(payload)
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        console.error("Centrala error response:", data);
+        throw new Error(`HTTP error! Status: ${response.status}, Response: ${JSON.stringify(data)}`);
       }
 
-      const data = await response.json();
       console.log("Centrala response:", data);
       return data;
     } catch (error: any) {
