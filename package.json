@@ -34,7 +34,8 @@
     "task21": "bun run task21/app.ts",
     "task22": "bun run task22/app.ts",
     "task23": "bun run task23/app.ts",
-    "task24": "bun run task24/app.ts"
+    "task24": "bun run task24/app.ts",
+    "task25": "bun run task25/app.ts"
   },
   "peerDependencies": {
     "typescript": "^5.6.3"
@@ -89,6 +90,7 @@
     "http-server": "^14.1.1",
     "js-yaml": "^4.1.0",
     "jsdom": "^26.1.0",
+    "langfuse": "^3.37.4",
     "libreoffice-convert": "^1.6.0",
     "lodash": "^4.17.21",
     "mammoth": "^1.8.0",
@@ -134,8 +136,7 @@
     "xlsx-populate": "^1.21.0",
     "youtube-caption-extractor": "^1.4.3",
     "youtube-node": "^1.3.3",
-    "zod": "^3.23.8",
-    "langfuse": "^2.18.1"
+    "zod": "^3.23.8"
   },
   "trustedDependencies": [
     "faiss-node",

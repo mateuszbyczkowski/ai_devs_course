@@ -19,6 +19,7 @@ export class OpenAIService {
   async completion(
     messages: ChatCompletionMessageParam[],
     model: string = "gpt-4.1",
+    temperature: number = 0.7,
     stream: boolean = false,
     jsonMode: boolean = false,
   ): Promise<
@@ -29,6 +30,7 @@ export class OpenAIService {
       const chatCompletion = await this._openai.chat.completions.create({
         messages,
         model,
+        temperature,
         stream,
         response_format: jsonMode ? { type: "json_object" } : { type: "text" },
       });
@@ -192,8 +194,8 @@ export class OpenAIService {
 
       // Read image file and convert to base64
       const imageBuffer = fs.readFileSync(imagePath);
-      const base64Image = imageBuffer.toString('base64');
-      const mimeType = imagePath.endsWith('.png') ? 'image/png' : 'image/jpeg';
+      const base64Image = imageBuffer.toString("base64");
+      const mimeType = imagePath.endsWith(".png") ? "image/png" : "image/jpeg";
 
       const messages: ChatCompletionMessageParam[] = [
         {

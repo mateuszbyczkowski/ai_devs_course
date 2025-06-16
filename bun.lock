@@ -53,6 +53,7 @@
         "http-server": "^14.1.1",
         "js-yaml": "^4.1.0",
         "jsdom": "^26.1.0",
+        "langfuse": "^3.37.4",
         "libreoffice-convert": "^1.6.0",
         "lodash": "^4.17.21",
         "mammoth": "^1.8.0",
@@ -1889,9 +1890,9 @@
 
     "ky": ["ky@1.8.1", "", {}, "sha512-7Bp3TpsE+L+TARSnnDpk3xg8Idi8RwSLdj6CMbNWoOARIrGrbuLGusV0dYwbZOm4bB3jHNxSw8Wk/ByDqJEnDw=="],
 
-    "langfuse": ["langfuse@3.20.0", "", { "dependencies": { "langfuse-core": "^3.20.0" } }, ""],
+    "langfuse": ["langfuse@3.37.4", "", { "dependencies": { "langfuse-core": "^3.37.4" } }, "sha512-MxnJXkS3xqlydMKWouanghkWZb8OqoDns+NIAZoD+y/WQh1mtx40n8c0dOaT7OahzSfB9ZbWj+j+yqJww/PJYQ=="],
 
-    "langfuse-core": ["langfuse-core@3.20.0", "", { "dependencies": { "mustache": "^4.2.0" } }, ""],
+    "langfuse-core": ["langfuse-core@3.37.4", "", { "dependencies": { "mustache": "^4.2.0" } }, "sha512-yqXkQ1/8V9TxF8q6oULWPQ4cYZlUs1egN6JfGuhJSWb5x2Ymgt4Qh9of/Kz//CTM7IZgzZqvrlnx0VXhNKDITg=="],
 
     "langsmith": ["langsmith@0.1.49", "", { "dependencies": { "@types/uuid": "^10.0.0", "commander": "^10.0.1", "p-queue": "^6.6.2", "p-retry": "4", "semver": "^7.6.3", "uuid": "^10.0.0" }, "peerDependencies": { "@langchain/core": "*", "langchain": "*", "openai": "*" }, "optionalPeers": ["langchain"] }, ""],
 

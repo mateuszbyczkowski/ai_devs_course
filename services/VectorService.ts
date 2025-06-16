@@ -16,7 +16,7 @@ export class VectorService {
     this.openAIService = openAIService;
   }
 
-  async ensureCollection(name: string, size: number = 1024) {
+  async ensureCollection(name: string, size: number = 3072) {
     const collections = await this.client.getCollections();
     if (!collections.collections.some((c) => c.name === name)) {
       await this.client.createCollection(name, {
@@ -52,11 +52,23 @@ export class VectorService {
       points.map(async (point) => {
         const embedding = await this.openAIService.createEmbedding(point.text);
 
+        // Ensure ID is a valid UUID
+        let pointId = point.id || uuidv4();
+        if (
+          pointId &&
+          !pointId.match(
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+          )
+        ) {
+          pointId = uuidv4();
+        }
+
         return {
-          id: point.id || uuidv4(),
+          id: pointId,
           vector: embedding,
           payload: {
             text: point.text,
+            original_id: point.id, // Store original ID in payload if needed
             ...point.metadata,
           },
         };
