@@ -9,3 +9,5 @@ task6/przesluchania/*
 task6/transcripts/*
 services/points.json
 task16/log.txt
+task25/data/**
+task25/enhanced_chunks.json
